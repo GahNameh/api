@@ -1,4 +1,4 @@
-module github.com/GahNameh/api
+module GahNameh/api
 
 go 1.17
 
