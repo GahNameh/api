@@ -1,1 +1,1 @@
-cd src && web: main
+web: ./src/main
