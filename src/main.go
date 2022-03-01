@@ -9,7 +9,8 @@ import (
 	"os"
 	"strconv"
 
-	_ "github.com/mattn/go-sqlite3"
+	//_ "github.com/mattn/go-sqlite3"
+	_ "modernc.org/sqlite"
 
 	"github.com/gorilla/mux"
 )
@@ -64,7 +65,7 @@ func getMonthByYearAndId(w http.ResponseWriter, r *http.Request) {
 }
 
 func readFromDb(inputYear int, inputMonth int) []DbEvent {
-	db, err := sql.Open("sqlite3", "database/db.db")
+	db, err := sql.Open("sqlite", "database/db.db")
 	if err != nil {
 		log.Fatal(err)
 	}
