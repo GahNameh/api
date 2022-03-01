@@ -65,7 +65,7 @@ func getMonthByYearAndId(w http.ResponseWriter, r *http.Request) {
 }
 
 func readFromDb(inputYear int, inputMonth int) []DbEvent {
-	db, err := sql.Open("sqlite", "database/db2.db")
+	db, err := sql.Open("sqlite3", "database/db2.db")
 	if err != nil {
 		log.Fatal(err)
 	}
