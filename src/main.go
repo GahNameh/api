@@ -71,7 +71,9 @@ func getNow(w http.ResponseWriter, r *http.Request) {
 func readFromDb(inputYear int, inputMonth int) []DbEvent {
 	dbPath := "db.db"
 	isHeroku, res := os.LookupEnv("HEROKU")
+	fmt.Println("HEROKU env is ", res)
 	if !res && isHeroku == "true" {
+		fmt.Println("HEROKU is ", isHeroku)
 		dbPath = "/app/src/" + dbPath
 	}
 	db, err := sql.Open("sqlite3", dbPath)
