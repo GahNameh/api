@@ -66,7 +66,7 @@ func getMonthByYearAndId(w http.ResponseWriter, r *http.Request) {
 }
 
 func readFromDb(inputYear int, inputMonth int) []DbEvent {
-	db, err := sql.Open("sqlite3", "database/db.db")
+	db, err := sql.Open("sqlite3", "/app/src/database/db.db")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -133,17 +133,8 @@ func main() {
 
 func listAll() {
 	fmt.Println("Start")
-	fmt.Println("/app")
-	files, err := ioutil.ReadDir("/app")
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	for _, file := range files {
-		fmt.Println(file.Name(), file.IsDir())
-	}
-	fmt.Println("/bin")
-	files, err = ioutil.ReadDir("/bin")
+	fmt.Println("/app/src")
+	files, err := ioutil.ReadDir("/app/src")
 	if err != nil {
 		log.Fatal(err)
 	}
