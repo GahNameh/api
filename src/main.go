@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
@@ -65,7 +66,7 @@ func getMonthByYearAndId(w http.ResponseWriter, r *http.Request) {
 }
 
 func readFromDb(inputYear int, inputMonth int) []DbEvent {
-	db, err := sql.Open("sqlite3", "/app/src/database/db.db")
+	db, err := sql.Open("sqlite3", "/app/src/db.db")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -121,7 +122,7 @@ func handleRequests() {
 
 func main() {
 	fmt.Println("Welcome here!")
-	// listAll()
+	listAll()
 	mockResponse := []Day{
 		{Title: "1"},
 		{Title: "2"},
@@ -130,16 +131,16 @@ func main() {
 	handleRequests()
 }
 
-// func listAll() {
-// 	fmt.Println("Start")
-// 	fmt.Println("/app/src")
-// 	files, err := ioutil.ReadDir("/app/src")
-// 	if err != nil {
-// 		log.Fatal(err)
-// 	}
+func listAll() {
+	fmt.Println("Start")
+	fmt.Println("/app/src")
+	files, err := ioutil.ReadDir("/app/src/database")
+	if err != nil {
+		log.Fatal(err)
+	}
 
-// 	for _, file := range files {
-// 		fmt.Println(file.Name(), file.IsDir())
-// 	}
-// 	fmt.Println("End")
-// }
+	for _, file := range files {
+		fmt.Println(file.Name(), file.IsDir())
+	}
+	fmt.Println("End")
+}
