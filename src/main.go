@@ -4,11 +4,12 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
 	"strconv"
+
+	ptime "github.com/yaa110/go-persian-calendar"
 
 	_ "github.com/mattn/go-sqlite3"
 	//_ "modernc.org/sqlite"
@@ -17,16 +18,23 @@ import (
 )
 
 type Response struct {
-	Days []Day
+	Year  int
+	Month string
+	Days  []Day
 }
 
 type Day struct {
-	Title       string
+	Title     string
+	Weekday   string
+	IsHoliday bool
+	Events    []Event
+	IsWeekend bool
+	Row       int
+	Column    int
+}
+
+type Event struct {
 	Description string
-	IsHoliday   bool
-	IsWeekend   bool
-	Row         int
-	Column      int
 }
 
 type DbEvent struct {
@@ -42,31 +50,31 @@ type DbEvent struct {
 var Result Response
 
 func homePage(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "Welcome to the HomePage!")
-	fmt.Println("Endpoint Hit: homePage")
-}
-
-func getMonth(w http.ResponseWriter, r *http.Request) {
-	json.NewEncoder(w).Encode(Result)
-}
-
-func getMonthById(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	key := vars["id"]
-	fmt.Println(key)
-	json.NewEncoder(w).Encode(Result)
+	fmt.Fprintf(w, "Application is running!")
 }
 
 func getMonthByYearAndId(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	year, _ := strconv.Atoi(vars["year"])
 	month, _ := strconv.Atoi(vars["month"])
-	events := readFromDb(year, month)
-	json.NewEncoder(w).Encode(events)
+	pt := ptime.Date(year, ptime.Month(month), 1, 0, 0, 0, 0, ptime.Iran())
+	response := generateResponse(pt)
+	json.NewEncoder(w).Encode(response)
+}
+
+func getNow(w http.ResponseWriter, r *http.Request) {
+	pt := ptime.Now()
+	response := generateResponse(pt)
+	json.NewEncoder(w).Encode(response)
 }
 
 func readFromDb(inputYear int, inputMonth int) []DbEvent {
-	db, err := sql.Open("sqlite3", "/app/src/db.db")
+	dbPath := "db.db"
+	isHeroku, res := os.LookupEnv("HEROKU")
+	if !res && isHeroku == "true" {
+		dbPath = "/app/src/" + dbPath
+	}
+	db, err := sql.Open("sqlite3", dbPath)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -107,11 +115,63 @@ func readFromDb(inputYear int, inputMonth int) []DbEvent {
 	return entities
 }
 
+func generateResponse(pt ptime.Time) Response {
+	year := pt.Year()
+	month := int(pt.Month())
+	events := readFromDb(year, month)
+
+	firstDay := pt.FirstMonthDay()
+	lastDay := pt.LastMonthDay()
+	firstDayWeekday := int(firstDay.Weekday())
+
+	response := Response{Year: year, Month: pt.Month().String()}
+	weekNo := 0
+	for i := firstDay.Day(); i <= lastDay.Day(); i++ {
+
+		firstDayWeekday = generateColumn(firstDayWeekday)
+
+		matchedEvents := []DbEvent{}
+		for _, event := range events {
+			if event.Day == i {
+				matchedEvents = append(matchedEvents, event)
+			}
+		}
+
+		day := Day{
+			Title:     strconv.Itoa(i),
+			Weekday:   ptime.Weekday(firstDayWeekday).String(),
+			IsHoliday: firstDayWeekday == 6,
+			IsWeekend: firstDayWeekday == 6,
+			Row:       weekNo,
+			Column:    firstDayWeekday,
+		}
+		for _, event := range matchedEvents {
+			if event.IsHoliday {
+				day.IsHoliday = true
+			}
+			day.Events = append(day.Events, Event{Description: event.Description})
+		}
+
+		response.Days = append(response.Days, day)
+		if firstDayWeekday == 6 {
+			weekNo++
+		}
+		firstDayWeekday++
+	}
+	return response
+}
+
+func generateColumn(column int) int {
+	if column >= 7 {
+		column -= 7
+	}
+	return column
+}
+
 func handleRequests() {
 	myRouter := mux.NewRouter().StrictSlash(true)
 	myRouter.HandleFunc("/", homePage)
-	myRouter.HandleFunc("/month", getMonth)
-	myRouter.HandleFunc("/month/{id}", getMonthById)
+	myRouter.HandleFunc("/now", getNow)
 	myRouter.HandleFunc("/{year}/{month}", getMonthByYearAndId)
 	port, res := os.LookupEnv("PORT")
 	if !res {
@@ -121,26 +181,6 @@ func handleRequests() {
 }
 
 func main() {
-	fmt.Println("Welcome here!")
-	listAll()
-	mockResponse := []Day{
-		{Title: "1"},
-		{Title: "2"},
-	}
-	Result = Response{Days: mockResponse}
+	fmt.Println("Application Started!")
 	handleRequests()
-}
-
-func listAll() {
-	fmt.Println("Start")
-	fmt.Println("/app/src")
-	files, err := ioutil.ReadDir("/app/src/database")
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	for _, file := range files {
-		fmt.Println(file.Name(), file.IsDir())
-	}
-	fmt.Println("End")
 }
