@@ -133,8 +133,8 @@ func main() {
 
 func listAll() {
 	fmt.Println("Start")
-	fmt.Println("app")
-	files, err := ioutil.ReadDir("app")
+	fmt.Println("/app")
+	files, err := ioutil.ReadDir("/app")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -142,8 +142,8 @@ func listAll() {
 	for _, file := range files {
 		fmt.Println(file.Name(), file.IsDir())
 	}
-	fmt.Println("bin")
-	files, err = ioutil.ReadDir("bin")
+	fmt.Println("/bin")
+	files, err = ioutil.ReadDir("/bin")
 	if err != nil {
 		log.Fatal(err)
 	}
