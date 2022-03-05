@@ -15,6 +15,8 @@ import (
 	//_ "modernc.org/sqlite"
 
 	"github.com/gorilla/mux"
+	"github.com/mvrilo/go-redoc"
+	"github.com/rs/cors"
 )
 
 type Response struct {
@@ -171,13 +173,20 @@ func generateColumn(column int) int {
 func handleRequests() {
 	myRouter := mux.NewRouter().StrictSlash(true)
 	myRouter.HandleFunc("/", homePage)
-	myRouter.HandleFunc("/now", getNow)
-	myRouter.HandleFunc("/{year}/{month}", getMonthByYearAndId)
+	myRouter.HandleFunc("/api/date/now", getNow)
+	myRouter.HandleFunc("/api/date/{year}/{month}", getMonthByYearAndId)
 	port, res := os.LookupEnv("PORT")
 	if !res {
 		port = "8080"
 	}
-	log.Fatal(http.ListenAndServe(":"+port, myRouter))
+
+	doc := redoc.Redoc{SpecFile: "./openapi.json", SpecPath: "/docs/openapi.json"}
+	docHandler := doc.Handler()
+	myRouter.Handle("/docs", docHandler)
+	myRouter.Handle("/docs/openapi.json", docHandler)
+
+	corsHandler := cors.AllowAll().Handler(myRouter)
+	log.Fatal(http.ListenAndServe(":"+port, corsHandler))
 }
 
 func main() {

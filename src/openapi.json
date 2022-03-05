@@ -1,0 +1,199 @@
+{
+    "openapi": "3.0.3",
+    "info": {
+      "title": "GahNameh Public API",
+      "version": "1.0.0",
+      "description": "GahNameh public API , providing get methods for GahNameh date picker library",
+      "contact": {
+        "name": "Masoud Moghaddam",
+        "email": "masoud.mghd@gmail.com"
+      },
+      "x-logo": {
+        "url": ""
+      }
+    },
+    "servers": [
+      {
+        "url": "https://gahnameh.herokuapp.com",
+        "description": "",
+        "x-last-modified": 1646457154218
+      }
+    ],
+    "paths": {
+      "/api/date/now": {
+        "summary": "Get current month dates and events",
+        "get": {
+          "tags": [
+            "Date"
+          ],
+          "responses": {
+            "200": {
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Result"
+                  }
+                }
+              },
+              "description": "Succeed",
+              "x-last-modified": 1646459776320
+            }
+          }
+        },
+        "x-last-modified": 1646457202326
+      },
+      "/api/date/{yearId}/{monthId}": {
+        "summary": "Get a month dates and events in a specified year",
+        "get": {
+          "tags": [
+            "Date"
+          ],
+          "parameters": [
+            {
+              "deprecated": false,
+              "name": "yearId",
+              "in": "path",
+              "required": true,
+              "x-last-modified": 1646460024543,
+              "example": "1400"
+            },
+            {
+              "deprecated": false,
+              "name": "monthId",
+              "in": "path",
+              "required": true,
+              "x-last-modified": 1646460034299,
+              "example": "12"
+            }
+          ],
+          "responses": {
+            "200": {
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Result"
+                  }
+                }
+              },
+              "description": "Succeed",
+              "x-last-modified": 1646459800494
+            }
+          }
+        },
+        "x-last-modified": 1646457231901
+      }
+    },
+    "components": {
+      "schemas": {
+        "Event": {
+          "required": [],
+          "type": "object",
+          "properties": {
+            "Description": {
+              "type": "string",
+              "example": [
+                "عید نوروز"
+              ]
+            }
+          },
+          "x-last-modified": 1646458679632
+        },
+        "Day": {
+          "required": [],
+          "type": "object",
+          "properties": {
+            "Title": {
+              "type": "string",
+              "example": "1"
+            },
+            "Weekday": {
+              "type": "string",
+              "example": "یک‌شنبه"
+            },
+            "IsHoliday": {
+              "type": "boolean",
+              "example": false
+            },
+            "Events": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/Event"
+              },
+              "example": []
+            },
+            "IsWeekend": {
+              "type": "boolean",
+              "example": false
+            },
+            "Row": {
+              "type": "number",
+              "example": 0
+            },
+            "Column": {
+              "type": "number",
+              "example": 1
+            }
+          },
+          "x-last-modified": 1646459317267
+        },
+        "Result": {
+          "type": "object",
+          "properties": {
+            "Year": {
+              "type": "number",
+              "example": 1400
+            },
+            "Month": {
+              "type": "string",
+              "example": "اسفند"
+            },
+            "Days": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/Day"
+              },
+              "example": [
+                {
+                    "Title":"6",
+                    "Weekday":"جمعه",
+                    "IsHoliday":true,
+                    "Events":null,
+                    "IsWeekend":true,
+                    "Row":0,
+                    "Column":6
+                },
+                {
+                    "Title":"7",
+                    "Weekday":"شنبه",
+                    "IsHoliday":false,
+                    "Events":[
+                        {
+                            "Description":"سالروز استقلال کانون وکلای دادگستری و روز وکیل مدافع"
+                        },
+                        {
+                            "Description":"سالروز درگذشت علی اکبر دهخدا"
+                        }
+                    ],
+                    "IsWeekend":false,
+                    "Row":1,
+                    "Column":0
+                }
+              ]
+            }
+          },
+          "x-last-modified": 1646459405421
+        }
+      }
+    },
+    "tags": [
+      {
+        "name": "Date",
+        "description": "Default Tag",
+        "externalDocs": {},
+        "x-last-modified": 1646457175704
+      }
+    ],
+    "externalDocs": {
+      "url": "https://gahnameh.github.io/docs"
+    }
+  }
