@@ -180,7 +180,13 @@ func handleRequests() {
 		port = "8080"
 	}
 
-	doc := redoc.Redoc{SpecFile: "./openapi.json", SpecPath: "/docs/openapi.json"}
+	docPath := "./openapi.json"
+	_, res = os.LookupEnv("HEROKU")
+	if res {
+		docPath = "/app/src/openspi.json"
+	}
+
+	doc := redoc.Redoc{SpecFile: docPath, SpecPath: "/docs/openapi.json"}
 	docHandler := doc.Handler()
 	myRouter.Handle("/docs", docHandler)
 	myRouter.Handle("/docs/openapi.json", docHandler)
