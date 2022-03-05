@@ -9,7 +9,7 @@
         "email": "masoud.mghd@gmail.com"
       },
       "x-logo": {
-        "url": ""
+        "url": "static/images/icon.png"
       }
     },
     "servers": [
