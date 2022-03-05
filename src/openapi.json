@@ -159,6 +159,7 @@
               "example": [
                 {
                     "Title":"6",
+                    "Value":"1400/12/6",
                     "Weekday":"جمعه",
                     "IsHoliday":true,
                     "Events":null,
@@ -168,6 +169,7 @@
                 },
                 {
                     "Title":"7",
+                    "Value":"1400/12/7",
                     "Weekday":"شنبه",
                     "IsHoliday":false,
                     "Events":[
