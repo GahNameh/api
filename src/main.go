@@ -183,7 +183,7 @@ func handleRequests() {
 	docPath := "./openapi.json"
 	_, res = os.LookupEnv("HEROKU")
 	if res {
-		docPath = "/app/src/openspi.json"
+		docPath = "/app/src/openapi.json"
 	}
 
 	doc := redoc.Redoc{SpecFile: docPath, SpecPath: "/docs/openapi.json"}
