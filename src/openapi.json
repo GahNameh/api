@@ -2,7 +2,7 @@
     "openapi": "3.0.3",
     "info": {
       "title": "GahNameh Public API",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "description": "GahNameh public API , providing get methods for GahNameh date picker library",
       "contact": {
         "name": "Masoud Moghaddam",
@@ -105,6 +105,10 @@
             "Title": {
               "type": "string",
               "example": "1"
+            },
+            "Value": {
+              "type": "string",
+              "example": "1400/12/1"
             },
             "Weekday": {
               "type": "string",
