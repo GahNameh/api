@@ -31,6 +31,7 @@ require (
 	github.com/kballard/go-shellquote v0.0.0-20180428030007-95032a82bc51 // indirect
 	github.com/mattn/go-isatty v0.0.12 // indirect
 	github.com/mvrilo/go-redoc v0.0.0-20211227142936-46bc9a9054d1
+	github.com/patrickmn/go-cache v2.1.0+incompatible
 	github.com/remyoudompheng/bigfft v0.0.0-20200410134404-eec4a21b6bb0 // indirect
 	github.com/rs/cors v1.8.2
 	github.com/swaggo/http-swagger v1.2.5

@@ -5,15 +5,19 @@ import (
 	"fmt"
 	"log"
 	"strconv"
+	"time"
 
 	"github.com/GahNameh/api/src/entity"
 	"github.com/GahNameh/api/src/model"
 	"github.com/GahNameh/api/src/utility"
 
+	gcache "github.com/patrickmn/go-cache"
 	ptime "github.com/yaa110/go-persian-calendar"
 
 	_ "github.com/mattn/go-sqlite3"
 )
+
+var c = gcache.New(5*time.Minute, 10*time.Minute)
 
 func generateColumn(column int) int {
 	if column >= 7 {
@@ -64,7 +68,21 @@ func readFromDb(inputYear int, inputMonth int) []entity.Event {
 	return entities
 }
 
-func CreateMonthResponse(pt ptime.Time) model.Response {
+func generateResponse(pt ptime.Time) model.Response {
+	var response model.Response
+	key := fmt.Sprintf("%v%v", pt.Year(), int(pt.Month()))
+	cached, isFound := c.Get(key)
+	if isFound {
+		cachedResponse := cached.(*model.Response)
+		response = *cachedResponse
+	} else {
+		response = generateMonth(pt)
+		c.Set(key, &response, gcache.NoExpiration)
+	}
+	return response
+}
+
+func generateMonth(pt ptime.Time) model.Response {
 	year := pt.Year()
 	month := int(pt.Month())
 	events := readFromDb(year, month)
@@ -74,11 +92,10 @@ func CreateMonthResponse(pt ptime.Time) model.Response {
 	firstDayWeekday := int(firstDay.Weekday())
 
 	response := model.Response{Year: year, Month: pt.Month().String()}
+
 	weekNo := 0
 	for i := firstDay.Day(); i <= lastDay.Day(); i++ {
-
 		firstDayWeekday = generateColumn(firstDayWeekday)
-
 		matchedEvents := []entity.Event{}
 		for _, event := range events {
 			if event.Day == i {
@@ -109,4 +126,8 @@ func CreateMonthResponse(pt ptime.Time) model.Response {
 		firstDayWeekday++
 	}
 	return response
+}
+
+func CreateMonthResponse(pt ptime.Time) model.Response {
+	return generateResponse(pt)
 }
