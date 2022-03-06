@@ -2,7 +2,7 @@
     "openapi": "3.0.3",
     "info": {
       "title": "GahNameh Public API",
-      "version": "1.0.1",
+      "version": "1.0.2",
       "description": "GahNameh public API , providing get methods for GahNameh date picker library",
       "contact": {
         "name": "Masoud Moghaddam",

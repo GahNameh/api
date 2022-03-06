@@ -14,10 +14,10 @@ import (
 )
 
 func configureStaticFiles(router *mux.Router) {
-	fs := http.FileServer(http.Dir(utility.GetEnvPath("public")))
+	//fs := http.FileServer(http.Dir(utility.GetEnvPath("public")))
 	sfs := http.FileServer(http.Dir(utility.GetEnvPath("public/static")))
 
-	router.Handle("/", fs)
+	//router.Handle("/", fs)
 	router.PathPrefix("/static/").Handler(http.StripPrefix("/static/", sfs))
 	router.HandleFunc("/favicon.ico", favIcon)
 }
@@ -33,10 +33,10 @@ func configureEndpoints(router *mux.Router) {
 
 func configureOpenApi(router *mux.Router) {
 	docPath := utility.GetEnvPath("openapi.json")
-	doc := redoc.Redoc{SpecFile: docPath, SpecPath: "/docs/openapi.json"}
+	doc := redoc.Redoc{SpecFile: docPath, SpecPath: "/docs/gahnameh-api-openapidoc.json"}
 	docHandler := doc.Handler()
-	router.Handle("/docs", docHandler)
-	router.Handle("/docs/openapi.json", docHandler)
+	router.Handle("/", docHandler)
+	router.Handle("/docs/gahnameh-api-openapidoc.json", docHandler)
 }
 
 func handleRequests() {
