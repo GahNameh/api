@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/GahNameh/api/src/entity"
@@ -68,7 +69,7 @@ func readFromDb(inputYear int, inputMonth int) []entity.Event {
 	return entities
 }
 
-func generateResponse(pt ptime.Time) model.Response {
+func generateResponse(pt ptime.Time, format string) model.Response {
 	var response model.Response
 	key := fmt.Sprintf("%v%v", pt.Year(), int(pt.Month()))
 	cached, isFound := c.Get(key)
@@ -79,6 +80,7 @@ func generateResponse(pt ptime.Time) model.Response {
 		response = generateMonth(pt)
 		c.Set(key, &response, gcache.NoExpiration)
 	}
+	generateResponseValues(&response, format)
 	return response
 }
 
@@ -91,7 +93,7 @@ func generateMonth(pt ptime.Time) model.Response {
 	lastDay := pt.LastMonthDay()
 	firstDayWeekday := int(firstDay.Weekday())
 
-	response := model.Response{Year: year, Month: pt.Month().String()}
+	response := model.Response{Year: year, Month: pt.Month().String(), MonthId: month}
 
 	weekNo := 0
 	for i := firstDay.Day(); i <= lastDay.Day(); i++ {
@@ -104,8 +106,8 @@ func generateMonth(pt ptime.Time) model.Response {
 		}
 
 		day := model.Day{
-			Title:     strconv.Itoa(i),
-			Value:     fmt.Sprintf("%d/%d/%d", year, month, i),
+			Title: strconv.Itoa(i),
+			//Value:     fmt.Sprintf("%d/%d/%d", year, month, i),
 			Weekday:   ptime.Weekday(firstDayWeekday).String(),
 			IsHoliday: firstDayWeekday == 6,
 			IsWeekend: firstDayWeekday == 6,
@@ -128,6 +130,30 @@ func generateMonth(pt ptime.Time) model.Response {
 	return response
 }
 
-func CreateMonthResponse(pt ptime.Time) model.Response {
-	return generateResponse(pt)
+func generateResponseValues(response *model.Response, format string) {
+	format = strings.Replace(format, "y", strconv.Itoa(response.Year), 1)
+	if strings.Contains(format, "mm") {
+		format = strings.Replace(format, "mm", fmt.Sprintf("%02d", response.MonthId), 1)
+	} else {
+		format = strings.Replace(format, "m", strconv.Itoa(response.MonthId), 1)
+	}
+	for i, day := range response.Days {
+		if strings.Contains(format, "dd") {
+			response.Days[i].Value = strings.Replace(format, "dd", fmt.Sprintf("%02s", day.Title), 1)
+		} else {
+			response.Days[i].Value = strings.Replace(format, "d", day.Title, 1)
+		}
+	}
+}
+
+func getRequestFormat(request model.Request) string {
+	if request.Format == "" {
+		return "y/m/d"
+	}
+	return request.Format
+}
+
+func CreateMonthResponse(pt ptime.Time, request model.Request) model.Response {
+	requestFormat := getRequestFormat(request)
+	return generateResponse(pt, requestFormat)
 }

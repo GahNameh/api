@@ -15,9 +15,9 @@ import (
 
 func configureStaticFiles(router *mux.Router) {
 	//fs := http.FileServer(http.Dir(utility.GetEnvPath("public")))
-	sfs := http.FileServer(http.Dir(utility.GetEnvPath("public/static")))
-
 	//router.Handle("/", fs)
+
+	sfs := http.FileServer(http.Dir(utility.GetEnvPath("public/static")))
 	router.PathPrefix("/static/").Handler(http.StripPrefix("/static/", sfs))
 	router.HandleFunc("/favicon.ico", favIcon)
 }

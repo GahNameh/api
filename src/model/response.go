@@ -1,7 +1,8 @@
 package model
 
 type Response struct {
-	Year  int
-	Month string
-	Days  []Day
+	Year    int
+	Month   string
+	MonthId int
+	Days    []Day
 }
