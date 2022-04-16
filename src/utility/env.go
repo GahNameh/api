@@ -20,9 +20,12 @@ func GetEnv(envName string) string {
 }
 
 func GetPortString() string {
-	port, res := os.LookupEnv("PORT")
-	if !res {
-		port = "8080"
+	port, res := os.LookupEnv("ASPNETCORE_PORT")
+	if !res || port == "" {
+		port, res = os.LookupEnv("PORT")
+		if !res {
+			port = "8080"
+		}
 	}
 	return ":" + port
 }
