@@ -117,10 +117,8 @@ func generateMonth(pt ptime.Time) model.Response {
 		}
 
 		day := model.Day{
-			Title: strconv.Itoa(i),
-			//Value:     fmt.Sprintf("%d/%d/%d", year, month, i),
+			Title:     strconv.Itoa(i),
 			Weekday:   ptime.Weekday(firstDayWeekday).String(),
-			IsHoliday: firstDayWeekday == 6,
 			IsWeekend: firstDayWeekday == 6,
 			Row:       weekNo,
 			Column:    firstDayWeekday,
