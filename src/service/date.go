@@ -80,6 +80,17 @@ func generateResponse(pt ptime.Time, format string) model.Response {
 		response = generateMonth(pt)
 		c.Set(key, &response, gcache.NoExpiration)
 	}
+	today := ptime.Now()
+
+	for i, day := range response.Days {
+		response.Days[i].IsToday = false
+		if response.Year == today.Year() && response.MonthId == int(today.Month()) {
+			if day.Title == strconv.Itoa(today.Day()) {
+				response.Days[i].IsToday = true
+			}
+		}
+	}
+
 	generateResponseValues(&response, format)
 	return response
 }
